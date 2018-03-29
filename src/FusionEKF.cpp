@@ -67,11 +67,17 @@ void FusionEKF::ProcessMeasurement(const MeasurementPackage &measurement_pack) {
             /**
             Convert radar from polar to cartesian coordinates and initialize state.
             */
+            double px = measurement_pack.raw_measurements_(0) * std::cos(measurement_pack.raw_measurements_(2));
+            double py = measurement_pack.raw_measurements_(0) * std::sin(measurement_pack.raw_measurements_(2));
+            double vx = measurement_pack.raw_measurements_(0) * std::sin(measurement_pack.raw_measurements_(2));
+            double vy = measurement_pack.raw_measurements_(0) * std::sin(measurement_pack.raw_measurements_(2));
+            ekf_.x_ << px, py, vx, vy;
         }
         else if (measurement_pack.sensor_type_ == MeasurementPackage::LASER) {
             /**
             Initialize state.
             */
+            ekf_.x_ << measurement_pack.raw_measurements_;
         }
 
         // done initializing, no need to predict or update
@@ -84,12 +90,26 @@ void FusionEKF::ProcessMeasurement(const MeasurementPackage &measurement_pack) {
      ****************************************************************************/
 
     /**
-     TODO:
        * Update the state transition matrix F according to the new elapsed time.
         - Time is measured in seconds.
-       * Update the process noise covariance matrix.
+       * Update the process noise covariance matrix Q.
        * Use noise_ax = 9 and noise_ay = 9 for your Q matrix.
      */
+    long long int delta_t = measurement_pack.timestamp_ - previous_timestamp_;
+    ekf_.F_ << 1, 0, delta_t, 0,
+            0, 1, 0, delta_t,
+            0, 0, 1, 0,
+            0, 0, 0, 1;
+
+    double t4_ = std::pow(delta_t, 4) / 4.0;
+    double t3_ = std::pow(delta_t, 3) / 2.0;
+    double t2_ = std::pow(delta_t, 2);
+    double noise_ax2 = 9.0*9.0;
+    double noise_ay2 = 9.0*9.0;
+    ekf_.Q_ << t4_* noise_ax2, 0, t3_ * noise_ax2, 0,
+            0, t4_*noise_ay2, 0, t3_*noise_ay2,
+            t3_*noise_ax2, 0, t2_*noise_ax2, 0,
+            0, t3_*noise_ay2, 0, t2_*noise_ay2;
 
     ekf_.Predict();
 
@@ -110,6 +130,7 @@ void FusionEKF::ProcessMeasurement(const MeasurementPackage &measurement_pack) {
         // Laser updates
         ekf_.Update(measurement_pack.raw_measurements_);
     }
+    previous_timestamp_ = measurement_pack.timestamp_;
 
     // print the output
     cout << "x_ = " << ekf_.x_ << endl;

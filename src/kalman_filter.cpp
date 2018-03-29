@@ -1,5 +1,6 @@
 #include "kalman_filter.h"
 #include <iostream>
+#include <cmath>
 
 using Eigen::MatrixXd;
 using Eigen::VectorXd;
@@ -32,6 +33,7 @@ void KalmanFilter::Predict() {
 
 void KalmanFilter::Update(const VectorXd &z) {
     // update the state by using Kalman Filter equations (LIDAR)
+    VectorXd y_;
     y_ = z - H_ * x_;
 
     MatrixXd Ht = H_.transpose();
@@ -47,10 +49,7 @@ void KalmanFilter::Update(const VectorXd &z) {
 }
 
 void KalmanFilter::UpdateEKF(const VectorXd &z) {
-    /**
-    TODO:
-      * update the state by using Extended Kalman Filter equations (RADAR)
-    */
+    //update the state by using Extended Kalman Filter equations (RADAR)
 
     // calculate Jacobian Matrix
 
@@ -75,22 +74,23 @@ void KalmanFilter::UpdateEKF(const VectorXd &z) {
         Hj << (px / c2),                     (py / c2),                     0,       0,
               -(py / c1),                    (px / c1),                     0,       0,
               py * (vx * py - vy * px) / c3, px * (px * vy - py * vx) / c3, px / c2, py / c2;
-
-
-
     }
 
+    VectorXd y_;
+    VectorXd hj(3);
+    hj << c2, std::atan2(py, px), (px*vx + py*vy)/c2;
+    y_ = z - hj;
+    y_(2) = std::fmod(y_(2),M_PI);
 
-    y_ = z - H_ * x_;
-
-    MatrixXd Ht = H_.transpose();
-    MatrixXd S = H_ * P_ * Ht + R_;
-    MatrixXd K = P_ * Ht * S.inverse();
+    MatrixXd Hjt = Hj.transpose();
+    MatrixXd S = Hj * P_ * Hjt + R_;
+    MatrixXd PHjt = P_ * Hjt;
+    MatrixXd K = PHjt * S.inverse();
 
     //new estimate
     x_ = x_ + (K * y_);
     long x_size = x_.size();
     MatrixXd I = MatrixXd::Identity(x_size, x_size);
-    P_ = (I - K * H_) * P_;
+    P_ = (I - K * Hj) * P_;
 
 }

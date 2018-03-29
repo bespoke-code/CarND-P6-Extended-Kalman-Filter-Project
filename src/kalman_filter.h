@@ -23,9 +23,6 @@ public:
     // measurement covariance matrix
     Eigen::MatrixXd R_;
 
-    // prediction error
-    Eigen::VectorXd y_;
-
     /**
      * Constructor
      */

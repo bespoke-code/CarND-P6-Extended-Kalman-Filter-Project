@@ -20,12 +20,6 @@ KalmanFilter::KalmanFilter() {
             0, 0, 1000, 0,
             0, 0, 0, 1000;
 
-
-    //measurement covariance
-    //R_ = MatrixXd(2, 2);
-    //R_ << 0.0225, 0,
-    //        0, 0.0225;
-
     //measurement matrix
     H_ = MatrixXd(2, 4);
     H_ << 1, 0, 0, 0,

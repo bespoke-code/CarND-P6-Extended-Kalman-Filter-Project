@@ -34,19 +34,12 @@ FusionEKF::FusionEKF() {
                 0, 1, 0, 0;
 
 
-    /**
-    TODO:
-      * Finish initializing the FusionEKF.
-      * Set the process and measurement noises
-    */
+    // Finish initializing the FusionEKF.
+    // Set the process and measurement noises
     ax = ay = 3.0; // maximum acceleration. User-defined. [m/s^2]
     ekf_.process_noise_ << 0, 0, 0, 0;
 
     ekf_.measurement_noise_ << 0, 0, 0, 0;
-
-
-
-
 }
 
 /**
@@ -131,10 +124,8 @@ void FusionEKF::ProcessMeasurement(const MeasurementPackage &measurement_pack) {
      *  Update
      ****************************************************************************/
 
-    /**
-       * Use the sensor type to perform the update step.
-       * Update the state and covariance matrices.
-     */
+    // Use the sensor type to perform the update step.
+    // Update the state and covariance matrices.
 
     if (measurement_pack.sensor_type_ == MeasurementPackage::RADAR) {
         // Radar updates

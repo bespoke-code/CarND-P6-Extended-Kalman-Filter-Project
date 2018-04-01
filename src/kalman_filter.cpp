@@ -22,9 +22,9 @@ KalmanFilter::KalmanFilter() {
 
 
     //measurement covariance
-    R_ = MatrixXd(2, 2);
-    R_ << 0.0225, 0,
-            0, 0.0225;
+    //R_ = MatrixXd(2, 2);
+    //R_ << 0.0225, 0,
+    //        0, 0.0225;
 
     //measurement matrix
     H_ = MatrixXd(2, 4);
@@ -37,6 +37,8 @@ KalmanFilter::KalmanFilter() {
             0, 1, 0, 1,
             0, 0, 1, 0,
             0, 0, 0, 1;
+
+    Q_ = MatrixXd(4, 4);
 
     process_noise_ =  VectorXd(4,1);
     process_noise_ << 0, 0, 0, 0;
@@ -117,7 +119,8 @@ void KalmanFilter::UpdateEKF(const VectorXd &z) {
     y_(2) = std::fmod(y_(2),M_PI);
 
     MatrixXd Hjt = Hj.transpose();
-    MatrixXd S = Hj * P_ * Hjt + R_;
+    MatrixXd HjP = Hj * P_ * Hjt;
+    MatrixXd S = HjP + R_;
     MatrixXd PHjt = P_ * Hjt;
     MatrixXd K = PHjt * S.inverse();
 

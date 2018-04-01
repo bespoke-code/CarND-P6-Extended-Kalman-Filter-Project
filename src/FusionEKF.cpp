@@ -3,6 +3,10 @@
 #include "Eigen/Dense"
 #include <iostream>
 
+
+// The code written in this file follows the lab exercises written in Udacity lectures
+// and additional remarks from their presented material.
+
 using namespace std;
 using Eigen::MatrixXd;
 using Eigen::VectorXd;

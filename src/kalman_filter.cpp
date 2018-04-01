@@ -6,6 +6,9 @@
 using Eigen::MatrixXd;
 using Eigen::VectorXd;
 
+// The code written in this file follows the lab exercises written in Udacity lectures
+// and additional remarks from their presented material.
+
 // Please note that the Eigen library does not initialize 
 // VectorXd or MatrixXd objects with zeros upon creation.
 

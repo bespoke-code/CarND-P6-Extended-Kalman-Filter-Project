@@ -1,8 +1,11 @@
 #ifndef KALMAN_FILTER_H_
 #define KALMAN_FILTER_H_
 #include "Eigen/Dense"
+#include "tools.h"
 
 class KalmanFilter {
+private:
+    Tools tools;
 public:
 
     // state vector
@@ -22,6 +25,9 @@ public:
 
     // measurement covariance matrix
     Eigen::MatrixXd R_;
+
+    Eigen::VectorXd process_noise_;
+    Eigen::VectorXd measurement_noise_;
 
     /**
      * Constructor
